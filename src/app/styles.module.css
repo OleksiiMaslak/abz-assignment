@@ -1,0 +1,19 @@
+
+
+.darkBar{
+  background-color: #222;
+  height: 60px;
+  width: 100vw;
+}
+
+.input-container-error{
+  
+}
+
+.input-container-erreor input{
+  border-color: #CB3D40;
+  border-width: 4px;
+}
+.input-container-erreor label{
+ color: #CB3D40 !important;
+}
