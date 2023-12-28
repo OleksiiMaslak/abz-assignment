@@ -64,7 +64,7 @@ main{
 
 .photo-section{
   position: relative;
-  background-image: url('../../public/images/pexels-alexandr-podvalny-1227513.jpeg');
+  background-image: url('../images/pexels-alexandr-podvalny-1227513.jpeg');
   background-repeat: no-repeat;
   height: 650px;
   background-size: 210%;
@@ -558,6 +558,21 @@ h1{
         .file-upload-text-added{
           color: #000000DE;
           font-weight: 700;
+        }
+
+
+        .success-section{
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 50px;
+          margin-top: 140px;
+          margin-bottom: 100px;
+        }
+
+        .hidden{
+          display: none;
         }
 
         

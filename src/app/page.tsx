@@ -7,9 +7,13 @@ import Image from 'next/image'
 import GetUserData from '@/api/GetUserData';
 import GetPositionsData from '@/api/GetPositionsData';
 import GetTokenData from '@/api/GetTokenData';
+import PostRequest from '@/api/PostRequest';
 
 import IUser from "@/interfaces/User";
 import IPosition from "@/interfaces/Position";
+import IRequestData from "@/interfaces/RequestData";
+
+import SuccessImage from '../images/success-image.svg'
 
 
 
@@ -25,10 +29,11 @@ export default function Home() {
     const [usersData, setUsersData] = useState<IUser[]>([]);
     const [nextPageUrl, setnextPageUrl] = useState('');
     const [positions, setPositions] = useState<IPosition[]>([]);
-    const [token, setToken] = useState<string | null>(null);
+    const [token, setToken] = useState<string>('');
 
-    const { register, handleSubmit, setError, formState: { errors, isValid  } } = useForm({
-        mode: 'onChange', 
+
+    const { register, handleSubmit, setError, formState: { errors, isValid  }, trigger  } = useForm({
+        mode: 'onBlur', 
       });
     const [image, setImage] = useState<string | null>(null);
     const [fileName, setFileName] = useState('Upload your photo');
@@ -40,7 +45,14 @@ export default function Home() {
 
         const fileUploadText = document.querySelector('.file-upload-text');
         fileUploadText?.classList.add('file-upload-text-added');
+        trigger()
       };
+
+      async function handleRequest(parms: any) {
+
+                const result = await PostRequest('https://frontend-test-assignment-api.abz.agency/api/v1/users', parms, token)
+                console.log(result);
+    }
 
       useEffect(() => {
         if (image) {
@@ -50,6 +62,30 @@ export default function Home() {
                     console.error("Minimum size of photo 70x70px");
                 } else {
                     console.log('File is valid');
+
+                    let selectedPosition = document.querySelector('input[name="position"]:checked') as HTMLInputElement;
+                    let selectedName = document.querySelector('input[name="name"]') as HTMLInputElement;
+                    let selectedEmail = document.querySelector('input[name="email"]') as HTMLInputElement;
+                    let selectedPhone = document.querySelector('input[name="phone"]') as HTMLInputElement;
+                    let selectedPhoto = document.querySelector('input[name="file"]') as HTMLInputElement;
+                    let file;
+                    if (selectedPhoto.files) {
+                        file = selectedPhoto.files[0];
+                    } 
+
+                    const requestData = {
+                        position_id: selectedPosition.id,
+                        name:  selectedName.value,
+                        email: selectedEmail.value,
+                        phone: selectedPhone.value,
+                        photo : file,
+                    }
+
+
+                    handleRequest(requestData)
+                     
+                     
+
                 }
             };
             img.src = image;
@@ -65,12 +101,9 @@ export default function Home() {
             if (file.size > 5 * 1024 * 1024) {
                 throw new Error("File size must not be greater than 5 Mb");
             }
-    
-            // Проверка формата файла (jpeg/jpg)
             if (!['image/jpeg', 'image/jpg'].includes(file.type)) {
                 throw new Error("The photo format must be jpeg/jpg type");
             }
-    
             setImage(URL.createObjectURL(file));
 
         } catch (error) {
@@ -100,6 +133,28 @@ export default function Home() {
             
         }
         fetchUserData()
+
+        function observeSuccessSection() {
+            const successSection = document.querySelector('.success-section');
+        
+            if (successSection) {
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            const isHidden = successSection.classList.contains('hidden');
+                            if (!isHidden) {
+                                fetchUserData();
+                            }
+                        }
+                    });
+                });
+        
+                observer.observe(successSection, { attributes: true });
+            }
+        }
+        
+        // Вызов функции для начала отслеживания
+        observeSuccessSection();
 
         async function fetchPositionsAndTokenData() {
             const responsePositin = await GetPositionsData();
@@ -461,6 +516,17 @@ export default function Home() {
                               </button>
                           </fieldset>
                       </form>
+                  </section>
+                  <section className='success-section hidden'>
+                      <h2>User successfully registered</h2>
+                      <Image
+                                          src={SuccessImage}
+                                          width={1024}
+                                          height={380}
+                                          alt="success-photo"
+                                          
+                                      />
+                            
                   </section>
               </article>
           </main>
