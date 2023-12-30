@@ -446,7 +446,7 @@ export default function Home() {
                                   })}
                                   type="email"
                                   className="post-input"
-                                  placeholder=''
+                                  placeholder=' '
                               />
                                 <label htmlFor="email">Email</label>
                               {errors.email && (
