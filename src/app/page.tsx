@@ -14,6 +14,7 @@ import IPosition from "@/interfaces/Position";
 import IRequestData from "@/interfaces/RequestData";
 
 import SuccessImage from '../images/success-image.svg'
+import Loader from '../images/loader.svg'
 
 
 
@@ -30,6 +31,7 @@ export default function Home() {
     const [nextPageUrl, setnextPageUrl] = useState('');
     const [positions, setPositions] = useState<IPosition[]>([]);
     const [token, setToken] = useState<string>('');
+    const [isLoading, setIsLoading] = useState(true);
 
 
     const { register, handleSubmit, setError, formState: { errors, isValid  }, trigger  } = useForm({
@@ -38,6 +40,16 @@ export default function Home() {
     const [image, setImage] = useState<string | null>(null);
     const [fileName, setFileName] = useState('Upload your photo');
     const [labelText, setLabelText] = useState('Upload');
+
+    const scrollToGetSection = () => {
+        const getSection = document.querySelector('.get-section');
+        getSection?.scrollIntoView({ behavior:'smooth', block: 'start' });
+    }
+
+    const scrollToPostSection = () => {
+        const postSection = document.querySelector('.post-section');
+        postSection?.scrollIntoView({ behavior:'smooth', block: 'start' });
+    }
 
     const handleFileChange = async (e : any) => {
         setFileName(e.target.files[0].name);
@@ -48,13 +60,47 @@ export default function Home() {
         trigger()
       };
 
-      async function handleRequest(parms: any) {
+      async function handleRequest(parms: IRequestData) {
 
                 const result = await PostRequest('https://frontend-test-assignment-api.abz.agency/api/v1/users', parms, token)
                 console.log(result);
     }
 
-      useEffect(() => {
+
+
+
+
+    const onSubmit = async (data: FieldValues) => {
+        try {
+            const file = data.file[0];
+            if (file.size > 5 * 1024 * 1024) {
+                throw new Error("File size must not be greater than 5 Mb");
+            }
+            if (!['image/jpeg', 'image/jpg'].includes(file.type)) {
+                throw new Error("The photo format must be jpeg/jpg type");
+            }
+            setImage(URL.createObjectURL(file));
+
+        } catch (error) {
+
+            console.log(false); 
+            document.querySelector('.file-upload-wrapper')?.classList.add('file-upload-error')
+            setError("file", {
+                type: "manual",
+                message: "File is not valid"
+              });
+        }
+    };
+
+    async function getNextUsers() {
+        const response = await GetUserData(nextPageUrl);
+        let updatedUserData = usersData.concat(response.users);
+        setUsersData(updatedUserData);
+        response.total_pages == response.page? setnextPageUrl('') : setnextPageUrl(response.links.next_url);
+
+    }
+
+    useEffect(() => {
         if (image) {
             const img = new window.Image();
             img.onload = () => {
@@ -93,43 +139,12 @@ export default function Home() {
         }
     }, [image]);
 
-
-
-    const onSubmit = async (data: FieldValues) => {
-        try {
-            const file = data.file[0];
-            if (file.size > 5 * 1024 * 1024) {
-                throw new Error("File size must not be greater than 5 Mb");
-            }
-            if (!['image/jpeg', 'image/jpg'].includes(file.type)) {
-                throw new Error("The photo format must be jpeg/jpg type");
-            }
-            setImage(URL.createObjectURL(file));
-
-        } catch (error) {
-
-            console.log(false); 
-            document.querySelector('.file-upload-wrapper')?.classList.add('file-upload-error')
-            setError("file", {
-                type: "manual",
-                message: "File is not valid"
-              });
-        }
-    };
-
-    async function getNextUsers() {
-        const response = await GetUserData(nextPageUrl);
-        let updatedUserData = usersData.concat(response.users);
-        setUsersData(updatedUserData);
-        response.total_pages == response.page? setnextPageUrl('') : setnextPageUrl(response.links.next_url);
-
-    }
-
     useEffect(() => {
         async function fetchUserData() {
             const response = await GetUserData('https://frontend-test-assignment-api.abz.agency/api/v1/users?page=1&count=6'); 
             setUsersData(response.users)
             setnextPageUrl(response.links.next_url);
+            setIsLoading(false);
             
         }
         fetchUserData()
@@ -189,7 +204,7 @@ export default function Home() {
           <div className="dark-bar"></div>
           <header className="site-header">
               <nav>
-                  <div className="logo">
+                  <div className="logo" onClick={scrollToPostSection}>
                       <svg
                           width="104"
                           height="26"
@@ -305,11 +320,11 @@ export default function Home() {
                       </svg>
                   </div>
                   <div className="nav-buttons">
-                      <button type="button" className="nav-button1">
+                      <button type="button" className="nav-button1" onClick={scrollToGetSection}>
                           Users
                       </button>
-                      <button type="button" className="nav-button2">
-                          Sign Up
+                      <button type="button" className="nav-button2" onClick={scrollToPostSection}>
+                          Sign up
                       </button>
                   </div>
               </nav>
@@ -327,14 +342,22 @@ export default function Home() {
                           They should also be excited to learn, as the world of
                           Front-End Development keeps evolving.
                       </p>
-                      <button type="button" className="hero-button">
-                          Sign Up
+                      <button type="button" className="hero-button" onClick={scrollToPostSection}>
+                          Sign up
                       </button>
                   </section>
                   <section className="get-section">
-                      <h2>Working with GET request</h2>
+                      <h2 className='get-title'>Working with GET request</h2>
                       <div className="users-info">
-                          {usersData.map((user) => (
+                        {isLoading ?                         <div className='loader'>
+                        <Image
+                                          src={Loader}
+                                          width={1000}
+                                          height={300}
+                                          alt="loader"
+                                          
+                                      />
+                        </div>: usersData.map((user) => (
                               <div className="user-box-wrapper" id={user.name}>
                                   <div className="user-box">
                                       <Image
@@ -355,6 +378,8 @@ export default function Home() {
                                   </div>
                               </div>
                           ))}
+
+
                       </div>
                       {nextPageUrl ? (
                           <button
