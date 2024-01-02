@@ -61,17 +61,16 @@ export default function Home() {
       async function handleRequest(parms: IRequestData) {
 
                 const result = await PostRequest('https://frontend-test-assignment-api.abz.agency/api/v1/users', parms, token)
-                console.log(result);
     }
 
-    const handleMouseEnter = (e: MouseEvent) => {
+    const handleMouseEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
         const parent = (e.target as HTMLElement).parentNode as HTMLElement;
         if (parent) {
             parent.classList.add('active');
         }
     };
 
-    const handleMouseLeave = (e: MouseEvent) => {
+    const handleMouseLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
         const parent = (e.target as HTMLElement).parentNode as HTMLElement;
         if (parent) {
             parent.classList.remove('active');
