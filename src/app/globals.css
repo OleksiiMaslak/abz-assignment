@@ -7,6 +7,7 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  color: rgba(0, 0, 0, 0.87) 
 }
 
 html,
@@ -14,8 +15,9 @@ body {
   min-width: 100vw;
   overflow-x: hidden;
   background-color: #F8F8F8;
-  
 }
+
+
 
 main{
   margin: 0 auto;
@@ -191,7 +193,7 @@ h1{
       flex-direction: column;
       align-items: center;
       gap: 20px;
-      overflow: hidden;
+      overflow: visible;
       color: rgba(0, 0, 0, 0.87);
     }
 
@@ -599,6 +601,47 @@ h1{
           animation: spin 2s linear infinite;
         }
 
+        .user-email-wrapper{
+          position: relative;
+          display: block;
+        }
+
+        .user-email{
+          text-decoration: none;
+        }
+
+        .email-hint {
+          display: inline-flex;
+          visibility: hidden;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          width: auto;
+          height: auto;
+          background-color: #000000DE;
+          border-radius: 4px;
+          color: #fff;
+          text-align: center;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 26px; 
+          border-radius: 6px;
+          padding: 3px 16px;
+          position: absolute;
+          z-index: 1;
+          top: 125%; 
+          left: 60%;
+          margin-left: -60px;
+          opacity: 0;
+          transition: opacity 0.3s;
+      }
+      
+      .active .email-hint {
+          visibility: visible;
+          opacity: 1;
+      }
+
         @media (max-width: 1180px){
           .logo{
             display: flex;
@@ -614,6 +657,10 @@ h1{
             width: 282px;
             height: 254px;
             flex-shrink: 0;
+          }
+          .overflow-ellipsis{
+            display: block;
+            width: 250px;
           }
           .user-box{
             width: 242px;

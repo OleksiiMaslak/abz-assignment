@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect  } from 'react';
 import { useForm, FieldValues } from "react-hook-form";
 
 import Image from 'next/image'
@@ -24,8 +24,6 @@ import Loader from '../images/loader.svg'
 
 
 export default function Home() {
-
-    
 
     const [usersData, setUsersData] = useState<IUser[]>([]);
     const [nextPageUrl, setnextPageUrl] = useState('');
@@ -65,6 +63,20 @@ export default function Home() {
                 const result = await PostRequest('https://frontend-test-assignment-api.abz.agency/api/v1/users', parms, token)
                 console.log(result);
     }
+
+    const handleMouseEnter = (e: MouseEvent) => {
+        const parent = (e.target as HTMLElement).parentNode as HTMLElement;
+        if (parent) {
+            parent.classList.add('active');
+        }
+    };
+
+    const handleMouseLeave = (e: MouseEvent) => {
+        const parent = (e.target as HTMLElement).parentNode as HTMLElement;
+        if (parent) {
+            parent.classList.remove('active');
+        }
+    };
 
 
 
@@ -320,10 +332,18 @@ export default function Home() {
                       </svg>
                   </div>
                   <div className="nav-buttons">
-                      <button type="button" className="nav-button1" onClick={scrollToGetSection}>
+                      <button
+                          type="button"
+                          className="nav-button1"
+                          onClick={scrollToGetSection}
+                      >
                           Users
                       </button>
-                      <button type="button" className="nav-button2" onClick={scrollToPostSection}>
+                      <button
+                          type="button"
+                          className="nav-button2"
+                          onClick={scrollToPostSection}
+                      >
                           Sign up
                       </button>
                   </div>
@@ -342,44 +362,68 @@ export default function Home() {
                           They should also be excited to learn, as the world of
                           Front-End Development keeps evolving.
                       </p>
-                      <button type="button" className="hero-button" onClick={scrollToPostSection}>
+                      <button
+                          type="button"
+                          className="hero-button"
+                          onClick={scrollToPostSection}
+                      >
                           Sign up
                       </button>
                   </section>
                   <section className="get-section">
-                      <h2 className='get-title'>Working with GET request</h2>
+                      <h2 className="get-title">Working with GET request</h2>
                       <div className="users-info">
-                        {isLoading ?                         <div className='loader'>
-                        <Image
-                                          src={Loader}
-                                          width={1000}
-                                          height={300}
-                                          alt="loader"
-                                          
-                                      />
-                        </div>: usersData.map((user) => (
-                              <div className="user-box-wrapper" id={user.name}>
-                                  <div className="user-box">
-                                      <Image
-                                          src={user.photo}
-                                          width={70}
-                                          height={70}
-                                          alt="user-photo"
-                                          className="user-photo"
-                                      />
-                                      <p className="user-name overflow-ellipsis">
-                                          {user.name}
-                                      </p>
-                                      <p className="user-description overflow-ellipsis">
-                                          {user.position} <br />
-                                          {user.email} <br />
-                                          {user.phone}
-                                      </p>
-                                  </div>
+                          {isLoading ? (
+                              <div className="loader">
+                                  <Image
+                                      src={Loader}
+                                      width={1000}
+                                      height={300}
+                                      alt="loader"
+                                  />
                               </div>
-                          ))}
-
-
+                          ) : (
+                              usersData.map((user) => (
+                                  <div
+                                      className="user-box-wrapper"
+                                      id={user.name}
+                                  >
+                                      <div className="user-box">
+                                          <Image
+                                              src={user.photo}
+                                              width={70}
+                                              height={70}
+                                              alt="user-photo"
+                                              className="user-photo"
+                                          />
+                                          <p className="user-name overflow-ellipsis">
+                                              {user.name}
+                                          </p>
+                                          <p className="user-description ">
+                                              {user.position} <br />
+                                              <div className="user-email-wrapper">
+                                                  <a
+                                                      href={`mailto:${user.email}`}
+                                                      className="user-email overflow-ellipsis "
+                                                      onMouseEnter={
+                                                          handleMouseEnter
+                                                      }
+                                                      onMouseLeave={
+                                                          handleMouseLeave
+                                                      }
+                                                  >
+                                                      {user.email}
+                                                  </a>
+                                                  <span className="email-hint">
+                                                      {user.email}
+                                                  </span>
+                                              </div>
+                                              {user.phone}
+                                          </p>
+                                      </div>
+                                  </div>
+                              ))
+                          )}
                       </div>
                       {nextPageUrl ? (
                           <button
@@ -396,7 +440,11 @@ export default function Home() {
                           className="post-form"
                           onSubmit={handleSubmit(onSubmit)}
                       >
-                          <div className={`input-container container-name ${errors.name ? 'input-container-error' : ''}`}>
+                          <div
+                              className={`input-container container-name ${
+                                  errors.name ? "input-container-error" : ""
+                              }`}
+                          >
                               <input
                                   {...register("name", {
                                       required: "Username is required",
@@ -413,7 +461,6 @@ export default function Home() {
                                   })}
                                   type="text"
                                   className="post-input"
-
                                   required
                               />
                               <label htmlFor="name">Your name</label>
@@ -424,7 +471,11 @@ export default function Home() {
                               )}
                           </div>
 
-                          <div className={`input-container container-email ${errors.email ? 'input-container-error' : ''}`}>
+                          <div
+                              className={`input-container container-email ${
+                                  errors.email ? "input-container-error" : ""
+                              }`}
+                          >
                               <input
                                   {...register("email", {
                                       required: "Email is required",
@@ -446,9 +497,9 @@ export default function Home() {
                                   })}
                                   type="email"
                                   className="post-input"
-                                  placeholder=' '
+                                  placeholder=" "
                               />
-                                <label htmlFor="email">Email</label>
+                              <label htmlFor="email">Email</label>
                               {errors.email && (
                                   <span className="email-error">
                                       {(errors.email.message as any) || ""}
@@ -456,7 +507,11 @@ export default function Home() {
                               )}
                           </div>
 
-                          <div className={`input-container container-phone ${errors.phone ? 'input-container-error' : ''}`}>
+                          <div
+                              className={`input-container container-phone ${
+                                  errors.phone ? "input-container-error" : ""
+                              }`}
+                          >
                               <input
                                   {...register("phone", {
                                       required: "This field is required",
@@ -512,7 +567,7 @@ export default function Home() {
                                   <span>Please select a position</span>
                               )}
 
-                              <div className="file-upload-wrapper" >
+                              <div className="file-upload-wrapper">
                                   <input
                                       {...register("file", { required: true })}
                                       type="file"
@@ -530,7 +585,11 @@ export default function Home() {
                                       {fileName}
                                   </span>
                               </div>
-                              {errors.file && <span className="file-error">Please upload a correct file</span>}
+                              {errors.file && (
+                                  <span className="file-error">
+                                      Please upload a correct file
+                                  </span>
+                              )}
 
                               <button
                                   className="form-button"
@@ -542,16 +601,14 @@ export default function Home() {
                           </fieldset>
                       </form>
                   </section>
-                  <section className='success-section hidden'>
+                  <section className="success-section hidden">
                       <h2>User successfully registered</h2>
                       <Image
-                                          src={SuccessImage}
-                                          width={1024}
-                                          height={380}
-                                          alt="success-photo"
-                                          
-                                      />
-                            
+                          src={SuccessImage}
+                          width={1024}
+                          height={380}
+                          alt="success-photo"
+                      />
                   </section>
               </article>
           </main>
